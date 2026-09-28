@@ -1,0 +1,11 @@
+node_modules
+.next
+.env.local
+.env
+*.log
+
+# Datos locales (contienen información sensible/personal) — no subir a git.
+# Se distribuyen junto al proyecto para probar en local; si migran a control
+# de versiones, saquen estas líneas y agreguen los .xlsx reales a .gitignore.
+data/*.xlsx
+service-account.json
