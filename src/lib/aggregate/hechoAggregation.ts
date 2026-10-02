@@ -1,6 +1,7 @@
+import type { RawRow } from '../sheets';
 import type { ParsedRow } from '../entityResolution';
-import type { Hecho, VehiculoInfo } from '../types';
-import { toISODate, redactAndTrim } from '../normalize';
+import type { Hecho, Intervencion, VehiculoInfo } from '../types';
+import { toISODate, redactAndTrim, redactDni } from '../normalize';
 import { collectVehiclesForRow } from './vehicleMap';
 import { mode } from './statsUtils';
 import { buildSearchText } from './searchTextBuilder';
@@ -20,12 +21,45 @@ function average(arr: number[]): number | null {
   return arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : null;
 }
 
-function aggregateOneGroup(id: number, groupRows: ParsedRow[], trustedByNombre: Map<string, VehiculoInfo[]>): Hecho {
-  const sorted = [...groupRows].sort((a, b) => {
+function sortByFecha(rows: ParsedRow[]): ParsedRow[] {
+  return [...rows].sort((a, b) => {
     const ta = a.fechaHecho ? a.fechaHecho.getTime() : Infinity;
     const tb = b.fechaHecho ? b.fechaHecho.getTime() : Infinity;
     return ta - tb;
   });
+}
+
+/** Columnas originales no vacías, sin REFERENCIA (ya se muestra como relato) y con DNIs redactados. */
+function cleanCampos(raw: RawRow): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (!value || key === 'REFERENCIA') continue;
+    out[key] = key === 'N° CAUSA' ? value : redactDni(value);
+  }
+  return out;
+}
+
+function buildIntervenciones(
+  sortedRows: ParsedRow[],
+  trustedByNombre: Map<string, VehiculoInfo[]>
+): Intervencion[] {
+  return sortedRows.map((r) => ({
+    rowId: r.rowId,
+    nombre: r.NOMBRE,
+    tipoIntervencion: r.tipoIntervencion,
+    fecha: toISODate(r.fechaHecho),
+    causa: r.causaStr,
+    modalidad: r.modalidad,
+    resultado: r.resultado,
+    qth: r.qth,
+    referencia: redactDni(r.referencia),
+    vehiculos: collectVehiclesForRow(r, trustedByNombre),
+    campos: cleanCampos(r.raw),
+  }));
+}
+
+function aggregateOneGroup(id: number, groupRows: ParsedRow[], trustedByNombre: Map<string, VehiculoInfo[]>): Hecho {
+  const sorted = sortByFecha(groupRows);
   const first = sorted[0];
 
   const vehiclesByPlate = new Map<string, VehiculoInfo>();
@@ -69,20 +103,30 @@ function aggregateOneGroup(id: number, groupRows: ParsedRow[], trustedByNombre: 
   return hecho;
 }
 
+export interface AggregateResult {
+  hechos: Hecho[];
+  /** hechoId -> filas originales (intervenciones) que lo forman, para la vista de detalle. */
+  detalles: Map<number, Intervencion[]>;
+}
+
 /**
  * Agrupa las filas parseadas (ya unidas por resolveHechoGroups) en hechos
- * canónicos, uniendo vehículos, modalidades, causas, etc.
+ * canónicos, uniendo vehículos, modalidades, causas, etc. Además devuelve,
+ * por separado, el detalle completo de cada hecho (sus intervenciones).
  */
 export function aggregateHechos(
   rows: ParsedRow[],
   groupOf: Map<number, number>,
   trustedByNombre: Map<string, VehiculoInfo[]>
-): Hecho[] {
+): AggregateResult {
   const groups = groupRowsById(rows, groupOf);
   const hechos: Hecho[] = [];
+  const detalles = new Map<number, Intervencion[]>();
   let nextId = 0;
   groups.forEach((groupRows) => {
-    hechos.push(aggregateOneGroup(nextId++, groupRows, trustedByNombre));
+    const id = nextId++;
+    hechos.push(aggregateOneGroup(id, groupRows, trustedByNombre));
+    detalles.set(id, buildIntervenciones(sortByFecha(groupRows), trustedByNombre));
   });
-  return hechos;
+  return { hechos, detalles };
 }

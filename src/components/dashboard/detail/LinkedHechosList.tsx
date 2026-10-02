@@ -7,6 +7,13 @@ interface LinkedHechosListProps {
   onSelect: (id: number) => void;
 }
 
+/** "Causa X" (o "Causa X (+N)" si el hecho reúne varias causas). */
+function causaLabel(causas: string[]): string {
+  if (causas.length === 0) return '';
+  const extra = causas.length > 1 ? ` (+${causas.length - 1})` : '';
+  return ` · Causa ${causas[0]}${extra}`;
+}
+
 export function LinkedHechosList({ selectedId, links, nodesById, onSelect }: LinkedHechosListProps) {
   return (
     <>
@@ -20,6 +27,7 @@ export function LinkedHechosList({ selectedId, links, nodesById, onSelect }: Lin
         if (!other) return null;
         return (
           <div className="link-item" key={i} onClick={() => onSelect(otherId)}>
+            <div className="lid">Hecho #{other.id}{causaLabel(other.causas)}</div>
             <span className={e.type === 'vehiculo' ? 'type-veh' : 'type-mo'}>
               {e.type === 'vehiculo' ? 'VEHÍCULO' : 'MO/ZONA/TIEMPO'}
             </span> — {e.detail}

@@ -7,6 +7,11 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ hechosCount, conVehiculoCount, linksCount }: DashboardHeaderProps) {
   return (
     <header>
+      <img
+        className="header-logo"
+        src="/escudo-dai.png"
+        alt="Escudo de la División Análisis de Imágenes"
+      />
       <h1>Vinculación de Hechos Delictivos</h1>
       <span className="subtitle">CABA — datos en vivo</span>
       <div className="kpis">

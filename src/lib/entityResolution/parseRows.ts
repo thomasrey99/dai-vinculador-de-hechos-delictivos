@@ -20,6 +20,8 @@ export interface ParsedRow {
   plates: string[]; // desde las propias columnas DOMINIO 1-9, ya limpias
   plateDetails: Record<string, VehiculoInfo>;
   mo: MoFeatures;
+  /** Fila original tal cual vino de la planilla (para la vista de detalle). */
+  raw: RawRow;
 }
 
 function extractOwnPlates(r: RawRow): { plates: string[]; plateDetails: Record<string, VehiculoInfo> } {
@@ -61,6 +63,7 @@ export function parseNormalizadoRows(rawRows: RawRow[]): ParsedRow[] {
       plates,
       plateDetails,
       mo: computeMoFeatures(r['REFERENCIA']),
+      raw: r,
     };
   });
 }

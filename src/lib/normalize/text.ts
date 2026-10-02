@@ -13,6 +13,19 @@ export function redactAndTrim(text: string | null | undefined, maxlen = 240): st
   return t;
 }
 
+/**
+ * Versión "completa" para la vista de detalle: no trunca, conserva los saltos
+ * de línea y redacta DNIs (7-8 dígitos) igual que redactAndTrim.
+ */
+export function redactDni(text: string | null | undefined): string {
+  if (!text) return '';
+  return text
+    .replace(/_x000D_/g, '')
+    .replace(/\r/g, '')
+    .replace(/\b\d{7,8}\b/g, '[DNI]')
+    .trim();
+}
+
 export function cleanComuna(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const s = String(raw).trim();

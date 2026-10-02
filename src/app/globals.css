@@ -189,3 +189,108 @@ input[type=range]{width:100%;}
   background:rgba(184,92,92,0.12); border:1px solid rgba(184,92,92,.4); color:#e2a3a3;
   padding:8px 10px; border-radius:4px; font-size:11.5px; margin-bottom:12px; line-height:1.4;
 }
+
+/* Pegar al final de src/app/globals.css.
+   Si ya habías pegado el bloque anterior (.detalle-section, .intervencion,
+   .campos-*), reemplazalo por este. */
+
+/* Botón "Ver detalle" de la tarjeta */
+.btn-detail{
+  margin-top:12px; width:100%;
+  background:transparent; color:var(--text); font-family:var(--sans); font-size:12px;
+  padding:7px 10px; border:1px solid var(--accent-neutral); border-radius:4px; cursor:pointer;
+}
+.btn-detail:hover{ background:#263049; }
+.btn-detail:focus-visible, .modal-close:focus-visible{ outline:2px solid var(--accent-veh); outline-offset:2px; }
+
+/* Modal de detalle */
+.modal-overlay{
+  position:fixed; inset:0; z-index:2000;
+  background:rgba(8,10,14,.72);
+  display:flex; align-items:center; justify-content:center; padding:24px;
+}
+.modal{
+  background:var(--panel); border:1px solid var(--border); border-radius:8px;
+  width:100%; max-width:760px; max-height:calc(100vh - 48px);
+  display:flex; flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.modal-header{
+  position:relative; padding:16px 52px 12px 18px; border-bottom:1px solid var(--border);
+}
+.modal-header .hid{ font-family:var(--mono); font-size:11px; color:var(--muted-2); }
+.modal-header .date{ font-family:var(--mono); font-size:12px; margin-top:2px; }
+.modal-header .qth{ font-size:14px; font-weight:600; margin-top:4px; }
+.modal-close{
+  position:absolute; top:12px; right:14px;
+  background:none; border:none; color:var(--muted); font-size:18px; line-height:1; cursor:pointer; padding:4px;
+}
+.modal-close:hover{ color:var(--text); }
+.modal-body{ padding:16px 18px 20px; overflow-y:auto; }
+
+/* Intervenciones dentro del modal */
+.intervencion{
+  border:1px solid var(--border); border-radius:5px; padding:12px;
+  margin-bottom:10px; background:var(--panel-2);
+}
+.intervencion .ihead{ font-size:12px; font-weight:600; margin-bottom:6px; }
+.intervencion .relato{
+  white-space:pre-wrap; overflow-wrap:anywhere;
+  font-size:12px; line-height:1.55; color:var(--text); margin-top:4px;
+}
+.campos-toggle summary{
+  cursor:pointer; color:var(--muted); font-size:11px; margin-top:12px; user-select:none;
+}
+.campos-table{ width:100%; border-collapse:collapse; margin-top:6px; font-size:11px; }
+.campos-table td{
+  padding:4px 6px; border-top:1px solid var(--border);
+  vertical-align:top; overflow-wrap:anywhere; color:var(--text);
+}
+.campos-table td.k{ color:var(--muted-2); width:38%; }
+
+/* Líneas de vínculo resaltadas en el mapa */
+.leaflet-overlay-pane path.link-glow-veh{ filter:drop-shadow(0 0 5px rgba(224,164,88,.95)); }
+.leaflet-overlay-pane path.link-glow-mo{ filter:drop-shadow(0 0 5px rgba(79,168,160,.95)); }
+
+/* Pegar al final de src/app/globals.css */
+
+/* Escudo en el header */
+.header-logo{ height:38px; width:auto; display:block; flex-shrink:0; }
+
+/* Pantalla de carga con escudo */
+.loading-screen--logo{ flex-direction:column; gap:20px; }
+.loading-logo{
+  width:120px; height:auto;
+  animation:loading-pulse 1.8s ease-in-out infinite;
+}
+@keyframes loading-pulse{
+  0%, 100%{ opacity:.55; transform:scale(.97); }
+  50%{ opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .loading-logo{ animation:none; }
+}
+
+/* Pegar al final de src/app/globals.css */
+.link-item .lid{ font-family:var(--mono); font-size:11px; color:var(--muted-2); margin-bottom:3px; }
+
+/* Pegar al final de src/app/globals.css (después de globals.detalle.css) */
+
+/* Vehículos del hecho, con las intervenciones donde aparece cada patente */
+.plate-item{
+  border:1px solid var(--border); border-radius:4px; background:var(--panel-2);
+  margin-bottom:6px; padding:7px 10px;
+}
+.plate-item summary{ cursor:pointer; font-size:12px; user-select:none; }
+.plate-item summary .veh-tag{ margin-bottom:0; }
+.plate-item .pmeta{ color:var(--muted); }
+.plate-appearances{ list-style:none; margin:8px 0 2px; padding:0; font-size:11.5px; color:var(--muted); }
+.plate-appearances li{ padding:4px 0; border-top:1px solid var(--border); overflow-wrap:anywhere; }
+.link-btn{
+  background:none; border:none; padding:0; margin-right:8px;
+  color:var(--accent-mo); font-family:var(--mono); font-size:11.5px; cursor:pointer; text-decoration:underline;
+}
+.link-btn:focus-visible{ outline:2px solid var(--accent-veh); outline-offset:2px; }
+
+/* Intervención a la que se saltó desde la lista de patentes */
+.intervencion--focus{ border-color:var(--accent-veh); }

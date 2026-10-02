@@ -1,0 +1,13 @@
+
+1-"hola"
+2-"necesito informacion de la carga 693"
+3-"sí" (a continuación del caso 2, si existe presupuesto)
+4-"necesito datos de la carga 12 y la 693, y llevame a esa pantalla"
+5-"recorrido de la carga 693", luego "sí"
+6-¿dónde está la carga 693 ahora?
+7-"cargas entregadas del cliente Perez", luego "cliente 13" y "sí (si hay mas de una pagina)"
+8-"presupuesto 254", luego "listame presupuestos"
+9-"mis datos y la carga 12"
+10-"necesito crear un tipo de servicio"
+
+

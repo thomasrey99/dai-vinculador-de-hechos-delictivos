@@ -5,6 +5,7 @@ import { MoSummary } from './MoSummary';
 interface HechoCardProps {
   hecho: Hecho;
   onClose: () => void;
+  onViewDetail: () => void;
 }
 
 function resultBadgeClass(resultado: string | null): string {
@@ -15,7 +16,7 @@ function resultBadgeClass(resultado: string | null): string {
   return '';
 }
 
-export function HechoCard({ hecho, onClose }: HechoCardProps) {
+export function HechoCard({ hecho, onClose, onViewDetail }: HechoCardProps) {
   return (
     <div className="hecho-card">
       <span className="close-x" onClick={onClose}>✕</span>
@@ -40,6 +41,10 @@ export function HechoCard({ hecho, onClose }: HechoCardProps) {
       <MoSummary mo={hecho.mo} />
 
       <div className="resumen-text">{hecho.resumen}</div>
+
+      <button type="button" className="btn-detail" onClick={onViewDetail}>
+        Ver detalle
+      </button>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import { useHechoFilters } from '@/hooks/useHechoFilters';
 import { useHechoSearch } from '@/hooks/useHechoSearch';
 import { DashboardHeader } from './dashboard/DashboardHeader';
+import { LoadingScreen } from './dashboard/LoadingScreen';
 import { Sidebar } from './dashboard/sidebar';
 import { MapView, type MapViewHandle } from './dashboard/map';
 import { DetailPanel } from './dashboard/detail';
@@ -63,7 +64,7 @@ export default function Dashboard() {
   }
 
   if (!data) {
-    return <div className="loading-screen">Cargando y vinculando hechos desde las planillas…</div>;
+    return <LoadingScreen />;
   }
 
   return (

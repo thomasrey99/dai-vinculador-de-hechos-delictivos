@@ -1,5 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import type { Edge, Hecho } from '@/lib/types';
 import { HechoCard } from './HechoCard';
+import { HechoDetailModal } from './HechoDetailModal';
 import { LinkedHechosList } from './LinkedHechosList';
 
 interface DetailPanelProps {
@@ -12,6 +16,13 @@ interface DetailPanelProps {
 }
 
 export function DetailPanel({ selectedNode, selectedId, links, nodesById, onClose, onSelect }: DetailPanelProps) {
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  // Al cambiar de hecho seleccionado (o deseleccionar), el modal se cierra.
+  useEffect(() => {
+    setDetailOpen(false);
+  }, [selectedId]);
+
   return (
     <div id="right">
       {!selectedNode && (
@@ -21,9 +32,13 @@ export function DetailPanel({ selectedNode, selectedId, links, nodesById, onClos
       )}
       {selectedNode && selectedId !== null && (
         <>
-          <HechoCard hecho={selectedNode} onClose={onClose} />
+          <HechoCard hecho={selectedNode} onClose={onClose} onViewDetail={() => setDetailOpen(true)} />
           <LinkedHechosList selectedId={selectedId} links={links} nodesById={nodesById} onSelect={onSelect} />
         </>
+      )}
+
+      {detailOpen && selectedNode && (
+        <HechoDetailModal hecho={selectedNode} onClose={() => setDetailOpen(false)} />
       )}
     </div>
   );

@@ -32,6 +32,33 @@ export interface Hecho {
   mo: MoFeatures;
 }
 
+/**
+ * Una fila original de la planilla que forma parte de un hecho (un mismo hecho
+ * puede tener varias intervenciones/expedientes). Solo se pide bajo demanda,
+ * vía /api/hechos/[id], para no inflar el payload de /api/data.
+ */
+export interface Intervencion {
+  rowId: number;
+  nombre: string;
+  tipoIntervencion: string | null;
+  fecha: string | null;
+  causa: string | null;
+  modalidad: string | null;
+  resultado: string | null;
+  qth: string | null;
+  /** Relato completo (sin truncar), con DNIs redactados. */
+  referencia: string;
+  /** Vehículos asociados a esta intervención (columnas DOMINIO 1-9 + base de vehículos por NOMBRE). */
+  vehiculos: VehiculoInfo[];
+  /** Todas las columnas originales no vacías (excepto REFERENCIA), con DNIs redactados. */
+  campos: Record<string, string>;
+}
+
+export interface HechoDetalle {
+  id: number;
+  intervenciones: Intervencion[];
+}
+
 export type EdgeType = 'vehiculo' | 'mo_geo_tiempo';
 
 export interface Edge {

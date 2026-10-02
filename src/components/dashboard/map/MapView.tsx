@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useReducer, useRef } from 'react';
 import type { Hecho, Edge } from '@/lib/types';
 import { drawHechosLayer } from './drawHechosLayer';
 import { MapLegend } from './MapLegend';
@@ -44,14 +44,25 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
   const markerLayer = useRef<LeafletLayerGroup | null>(null);
   const linkLayer = useRef<LeafletLayerGroup | null>(null);
   const leafletRef = useRef<LeafletModule | null>(null);
-  const [, forceTick] = useRefreshTick();
+  // Fuerza un re-render apenas el mapa termina de inicializarse, para que corra el efecto de dibujado.
+  const [, forceTick] = useReducer((x: number) => x + 1, 0);
 
   // init map once
   useEffect(() => {
-    if (!containerRef.current || mapInstance.current) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Si el efecto se limpia antes de que resuelva el import (Strict Mode en
+    // desarrollo, o desmontaje rápido), esta bandera evita crear un 2º mapa
+    // sobre el mismo contenedor ("Map container is already initialized").
+    let cancelled = false;
+    let map: LeafletMap | null = null;
+
     import('leaflet').then((L) => {
+      if (cancelled) return;
+
       leafletRef.current = L;
-      const map = L.map(containerRef.current!, { zoomControl: true, attributionControl: true })
+      map = L.map(container, { zoomControl: true, attributionControl: true })
         .setView(INITIAL_CENTER, INITIAL_ZOOM);
       L.tileLayer(TILE_URL, {
         maxZoom: 19,
@@ -62,11 +73,14 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
       mapInstance.current = map;
       forceTick(); // trigger a draw pass once the map is ready
     });
+
     return () => {
-      mapInstance.current?.remove();
+      cancelled = true;
+      map?.remove();
       mapInstance.current = null;
+      markerLayer.current = null;
+      linkLayer.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // pan to the selected hecho
@@ -114,11 +128,3 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     </div>
   );
 });
-
-/** Pequeño hook para forzar un re-render (usado solo para redibujar apenas el mapa termina de inicializarse). */
-function useRefreshTick() {
-  return useReducerTick();
-}
-function useReducerTick() {
-  return require('react').useReducer((x: number) => x + 1, 0);
-}
